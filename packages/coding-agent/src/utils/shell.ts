@@ -92,7 +92,12 @@ export function getShellConfig(customShellPath?: string): ShellConfig {
 		);
 	}
 
-	// Unix: try /bin/bash, then bash on PATH, then fallback to sh
+	// Unix: prefer process.env.SHELL if set and exists, then /bin/bash, then bash on PATH, then fallback to sh
+	const envShell = process.env.SHELL;
+	if (envShell && existsSync(envShell)) {
+		return { shell: envShell, args: ["-c"] };
+	}
+
 	if (existsSync("/bin/bash")) {
 		return { shell: "/bin/bash", args: ["-c"] };
 	}
